@@ -108,7 +108,7 @@ module.exports = function(webpackEnv) {
               stage: 3,
             }),
           ],
-          sourceMap: isEnvProduction && shouldUseSourceMap,
+          sourceMap: isEnvProduction ? shouldUseSourceMap : isEnvDevelopment,
         },
       },
     ].filter(Boolean);
@@ -116,7 +116,7 @@ module.exports = function(webpackEnv) {
       loaders.push({
         loader: require.resolve(preProcessor),
         options: {
-          sourceMap: isEnvProduction && shouldUseSourceMap,
+          sourceMap: isEnvProduction ? shouldUseSourceMap : isEnvDevelopment,
         },
       });
     }
@@ -131,7 +131,7 @@ module.exports = function(webpackEnv) {
       ? shouldUseSourceMap
         ? 'source-map'
         : false
-      : isEnvDevelopment && 'eval-source-map',
+      : isEnvDevelopment && 'cheap-module-source-map',
     // These are the "entry points" to our application.
     // This means they will be the "root" imports that are included in JS bundle.
     entry: [
@@ -381,7 +381,7 @@ module.exports = function(webpackEnv) {
                     {
                       loaderMap: {
                         svg: {
-                          ReactComponent: '@svgr/webpack?-svgo![path]',
+                          ReactComponent: '@svgr/webpack?-svgo,+ref![path]',
                         },
                       },
                     },
@@ -454,7 +454,9 @@ module.exports = function(webpackEnv) {
               exclude: cssModuleRegex,
               use: getStyleLoaders({
                 importLoaders: 1,
-                sourceMap: isEnvProduction && shouldUseSourceMap,
+                sourceMap: isEnvProduction
+                  ? shouldUseSourceMap
+                  : isEnvDevelopment,
               }),
               // Don't consider CSS imports dead code even if the
               // containing package claims to have no side effects.
@@ -468,7 +470,9 @@ module.exports = function(webpackEnv) {
               test: cssModuleRegex,
               use: getStyleLoaders({
                 importLoaders: 1,
-                sourceMap: isEnvProduction && shouldUseSourceMap,
+                sourceMap: isEnvProduction
+                  ? shouldUseSourceMap
+                  : isEnvDevelopment,
                 modules: true,
                 getLocalIdent: getCSSModuleLocalIdent,
               }),
@@ -482,7 +486,9 @@ module.exports = function(webpackEnv) {
               use: getStyleLoaders(
                 {
                   importLoaders: 2,
-                  sourceMap: isEnvProduction && shouldUseSourceMap,
+                  sourceMap: isEnvProduction
+                    ? shouldUseSourceMap
+                    : isEnvDevelopment,
                 },
                 'sass-loader'
               ),
@@ -499,7 +505,9 @@ module.exports = function(webpackEnv) {
               use: getStyleLoaders(
                 {
                   importLoaders: 2,
-                  sourceMap: isEnvProduction && shouldUseSourceMap,
+                  sourceMap: isEnvProduction
+                    ? shouldUseSourceMap
+                    : isEnvDevelopment,
                   modules: true,
                   getLocalIdent: getCSSModuleLocalIdent,
                 },
@@ -659,6 +667,7 @@ module.exports = function(webpackEnv) {
     node: {
       module: 'empty',
       dgram: 'empty',
+      dns: 'mock',
       fs: 'empty',
       net: 'empty',
       tls: 'empty',
