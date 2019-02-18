@@ -31,6 +31,7 @@ const getClientEnvironment = require('./env');
 const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin-alt');
 const typescriptFormatter = require('react-dev-utils/typescriptFormatter');
+const WebappWebpackPlugin = require('webapp-webpack-plugin');
 // @remove-on-eject-begin
 const getCacheIdentifier = require('react-dev-utils/getCacheIdentifier');
 // @remove-on-eject-end
@@ -660,6 +661,24 @@ module.exports = function(webpackEnv) {
           watch: paths.appSrc,
           silent: true,
           formatter: typescriptFormatter,
+        }),
+      isEnvProduction &&
+        new WebappWebpackPlugin({
+          logo: path.join(
+            paths.appSrc,
+            '/assets/images/tajawal_favicon_152X152.png'
+          ),
+          prefix: 'static/tajawal-favicon',
+          inject: false,
+        }),
+      isEnvProduction &&
+        new WebappWebpackPlugin({
+          logo: path.join(
+            paths.appSrc,
+            '/assets/images/almosafer_favicon_152X152.png'
+          ),
+          prefix: 'static/almosafer-favicon',
+          inject: false,
         }),
     ].filter(Boolean),
     // Some libraries import Node modules but don't use them in the browser.
