@@ -57,6 +57,14 @@ module.exports = function(webpackEnv) {
   const isEnvDevelopment = webpackEnv === 'development';
   const isEnvProduction = webpackEnv === 'production';
 
+  const faviconExists =
+    fs.existsSync(
+      path.join(paths.appSrc, '/assets/images/tajawal_favicon_152X152.png')
+    ) &&
+    fs.existsSync(
+      path.join(paths.appSrc, '/assets/images/almosafer_favicon_152X152.png')
+    );
+
   // Webpack uses `publicPath` to determine where the app is being served from.
   // It requires a trailing slash, or the file assets will get an incorrect path.
   // In development, we always serve from the root. This makes config easier.
@@ -649,6 +657,7 @@ module.exports = function(webpackEnv) {
           formatter: isEnvProduction ? typescriptFormatter : undefined,
         }),
       isEnvProduction &&
+        faviconExists &&
         new WebappWebpackPlugin({
           logo: path.join(
             paths.appSrc,
@@ -658,6 +667,7 @@ module.exports = function(webpackEnv) {
           inject: false,
         }),
       isEnvProduction &&
+        faviconExists &&
         new WebappWebpackPlugin({
           logo: path.join(
             paths.appSrc,
