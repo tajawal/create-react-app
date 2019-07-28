@@ -53,9 +53,11 @@ const sassModuleRegex = /\.module\.(scss|sass)$/;
 
 // This is the production and development configuration.
 // It is focused on developer experience, fast rebuilds, and a minimal bundle.
-module.exports = function(webpackEnv) {
+module.exports = function(webpackEnv, appType = 'desktop') {
   const isEnvDevelopment = webpackEnv === 'development';
   const isEnvProduction = webpackEnv === 'production';
+  const isMWeb = appType === 'mweb';
+
 
   const faviconExists =
     fs.existsSync(
@@ -364,8 +366,8 @@ module.exports = function(webpackEnv) {
                   'babel-preset-react-app/webpack-overrides'
                 ),
                 // @remove-on-eject-begin
-                babelrc: false,
-                configFile: false,
+                babelrc: true,
+                configFile: true,
                 presets: [require.resolve('babel-preset-react-app')],
                 // Make sure we have a unique cache identifier, erring on the
                 // side of caution.
@@ -633,6 +635,12 @@ module.exports = function(webpackEnv) {
             new RegExp('/[^/]+\\.[^/]+$'),
           ],
         }),
+        isMWeb &&
+          new InjectManifest({
+            swSrc: path.join(publicPath, '/sw_mweb.js'),
+            swDest: path.join(paths.appBuild, '/sw_mweb.js'),
+            exclude: [/\.map$/, /asset-manifest\.json$/],
+          }),
       // TypeScript type checking
       useTypeScript &&
         new ForkTsCheckerWebpackPlugin({
