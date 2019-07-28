@@ -635,12 +635,12 @@ module.exports = function(webpackEnv, appType = 'desktop') {
             new RegExp('/[^/]+\\.[^/]+$'),
           ],
         }),
-        isMWeb &&
-          new InjectManifest({
-            swSrc: path.join(publicPath, '/sw_mweb.js'),
-            swDest: path.join(paths.appBuild, '/sw_mweb.js'),
-            exclude: [/\.map$/, /asset-manifest\.json$/],
-          }),
+      isEnvProduction && isMWeb &&
+        new InjectManifest({
+          swSrc: path.join(publicPath, '/sw_mweb.js'),
+          swDest: path.join(paths.appBuild, '/sw_mweb.js'),
+          exclude: [/\.map$/, /asset-manifest\.json$/],
+        }),
       // TypeScript type checking
       useTypeScript &&
         new ForkTsCheckerWebpackPlugin({
