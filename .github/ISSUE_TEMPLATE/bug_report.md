@@ -1,7 +1,7 @@
 ---
 name: Bug report
 about: Create a report to help us improve
-labels: 'issue: bug, needs triage'
+labels: 'issue: bug report, needs triage'
 ---
 
 <!--
@@ -103,7 +103,14 @@ labels: 'issue: bug, needs triage'
 
 (Write your steps here:)
 
-1. 2. 3.
+<<<<<<< HEAD:.github/ISSUE_TEMPLATE/bug_report.md
+
+1. 2. # 3.
+1.
+1.
+1.
+
+> > > > > > > 889df8e65b105650fdedb21cb92635fabd40e3b6:.github/ISSUE_TEMPLATE/bug_report.md
 
 ### Expected behavior
 
