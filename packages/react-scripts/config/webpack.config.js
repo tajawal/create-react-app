@@ -25,6 +25,7 @@ const safePostCssParser = require('postcss-safe-parser');
 const ManifestPlugin = require('webpack-manifest-plugin');
 const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
 const WorkboxWebpackPlugin = require('workbox-webpack-plugin');
+const {InjectManifest} = require('workbox-webpack-plugin');
 const WatchMissingNodeModulesPlugin = require('react-dev-utils/WatchMissingNodeModulesPlugin');
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 const getCSSModuleLocalIdent = require('react-dev-utils/getCSSModuleLocalIdent');
@@ -61,10 +62,10 @@ const sassModuleRegex = /\.module\.(scss|sass)$/;
 
 // This is the production and development configuration.
 // It is focused on developer experience, fast rebuilds, and a minimal bundle.
-module.exports = function(webpackEnv, appType = 'desktop') {
+module.exports = function(webpackEnv) {
   const isEnvDevelopment = webpackEnv === 'development';
   const isEnvProduction = webpackEnv === 'production';
-  const isMWeb = appType === 'mweb';
+  const isMWeb = process.env.APP_TYPE === 'mweb';;
 
 
   // Webpack uses `publicPath` to determine where the app is being served from.
@@ -657,7 +658,7 @@ module.exports = function(webpackEnv, appType = 'desktop') {
       new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
       // Generate a service worker script that will precache, and keep up to date,
       // the HTML & assets that are part of the Webpack build.
-      isEnvProduction &&
+      isEnvProduction && !isMWeb &&
         new WorkboxWebpackPlugin.GenerateSW({
           clientsClaim: true,
           exclude: [/\.map$/, /asset-manifest\.json$/],
@@ -673,7 +674,7 @@ module.exports = function(webpackEnv, appType = 'desktop') {
         }),
       isEnvProduction && isMWeb &&
         new InjectManifest({
-          swSrc: path.join(publicPath, '/sw_mweb.js'),
+          swSrc: path.join(paths.appPublic, '/sw_mweb.js'),
           swDest: path.join(paths.appBuild, '/sw_mweb.js'),
           exclude: [/\.map$/, /asset-manifest\.json$/],
         }),
