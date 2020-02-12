@@ -37,7 +37,7 @@
     "svg-term-cli": "^2.1.1",
     "tempy": "^0.2.1",
     "wait-for-localhost": "^3.1.0",
-    "workbox-webpack-plugin": "5.0.0",
+    "workbox-webpack-plugin": "5.0.0"
   },
   "husky": {
     "hooks": {
