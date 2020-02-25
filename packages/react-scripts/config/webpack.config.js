@@ -25,7 +25,7 @@ const safePostCssParser = require('postcss-safe-parser');
 const ManifestPlugin = require('webpack-manifest-plugin');
 const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin');
 const WorkboxWebpackPlugin = require('workbox-webpack-plugin');
-const {InjectManifest} = require('workbox-webpack-plugin');
+const { InjectManifest } = require('workbox-webpack-plugin');
 const WatchMissingNodeModulesPlugin = require('react-dev-utils/WatchMissingNodeModulesPlugin');
 const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 const getCSSModuleLocalIdent = require('react-dev-utils/getCSSModuleLocalIdent');
@@ -65,8 +65,7 @@ const sassModuleRegex = /\.module\.(scss|sass)$/;
 module.exports = function(webpackEnv) {
   const isEnvDevelopment = webpackEnv === 'development';
   const isEnvProduction = webpackEnv === 'production';
-  const isMWeb = process.env.APP_TYPE === 'mweb';;
-
+  const isMWeb = process.env.APP_TYPE === 'mweb';
 
   // Webpack uses `publicPath` to determine where the app is being served from.
   // It requires a trailing slash, or the file assets will get an incorrect path.
@@ -134,6 +133,49 @@ module.exports = function(webpackEnv) {
       });
     }
     return loaders;
+  };
+
+  const eslintConfiguration = {
+    test: /\.(js|mjs|jsx|ts|tsx)$/,
+    enforce: 'pre',
+    use: [
+      {
+        options: {
+          formatter: require.resolve('react-dev-utils/eslintFormatter'),
+          eslintPath: require.resolve('eslint'),
+          // @remove-on-eject-begin
+          baseConfig: (() => {
+            const eslintCli = new eslint.CLIEngine();
+            let eslintConfig;
+            try {
+              eslintConfig = eslintCli.getConfigForFile(paths.appIndexJs);
+            } catch (e) {
+              // A config couldn't be found.
+            }
+
+            // We allow overriding the config, only if it extends our config
+            // (`extends` can be a string or array of strings).
+            if (
+              process.env.EXTEND_ESLINT &&
+              eslintConfig &&
+              eslintConfig.extends &&
+              eslintConfig.extends.includes('react-app')
+            ) {
+              return eslintConfig;
+            } else {
+              return {
+                extends: [require.resolve('eslint-config-react-app')],
+              };
+            }
+          })(),
+          ignore: false,
+          useEslintrc: false,
+          // @remove-on-eject-end
+        },
+        loader: require.resolve('eslint-loader'),
+      },
+    ],
+    include: paths.appSrc,
   };
 
   return {
@@ -323,48 +365,7 @@ module.exports = function(webpackEnv) {
 
         // First, run the linter.
         // It's important to do this before Babel processes the JS.
-        {
-          test: /\.(js|mjs|jsx|ts|tsx)$/,
-          enforce: 'pre',
-          use: [
-            {
-              options: {
-                formatter: require.resolve('react-dev-utils/eslintFormatter'),
-                eslintPath: require.resolve('eslint'),
-                // @remove-on-eject-begin
-                baseConfig: (() => {
-                  const eslintCli = new eslint.CLIEngine();
-                  let eslintConfig;
-                  try {
-                    eslintConfig = eslintCli.getConfigForFile(paths.appIndexJs);
-                  } catch (e) {
-                    // A config couldn't be found.
-                  }
-
-                  // We allow overriding the config, only if it extends our config
-                  // (`extends` can be a string or array of strings).
-                  if (
-                    process.env.EXTEND_ESLINT &&
-                    eslintConfig &&
-                    eslintConfig.extends &&
-                    eslintConfig.extends.includes('react-app')
-                  ) {
-                    return eslintConfig;
-                  } else {
-                    return {
-                      extends: [require.resolve('eslint-config-react-app')],
-                    };
-                  }
-                })(),
-                ignore: false,
-                useEslintrc: false,
-                // @remove-on-eject-end
-              },
-              loader: require.resolve('eslint-loader'),
-            },
-          ],
-          include: paths.appSrc,
-        },
+        isEnvDevelopment ? eslintConfiguration : {},
         {
           // "oneOf" will traverse all following loaders until one will
           // match the requirements. When no loader matches it will fall
@@ -658,7 +659,8 @@ module.exports = function(webpackEnv) {
       new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
       // Generate a service worker script that will precache, and keep up to date,
       // the HTML & assets that are part of the Webpack build.
-      isEnvProduction && !isMWeb &&
+      isEnvProduction &&
+        !isMWeb &&
         new WorkboxWebpackPlugin.GenerateSW({
           clientsClaim: true,
           exclude: [/\.map$/, /asset-manifest\.json$/],
@@ -672,7 +674,8 @@ module.exports = function(webpackEnv) {
             new RegExp('/[^/]+\\.[^/]+$'),
           ],
         }),
-      isEnvProduction && isMWeb &&
+      isEnvProduction &&
+        isMWeb &&
         new InjectManifest({
           swSrc: path.join(paths.appPublic, '/sw_mweb.js'),
           swDest: path.join(paths.appBuild, '/sw_mweb.js'),
