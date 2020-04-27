@@ -594,14 +594,14 @@ module.exports = function(webpackEnv) {
       ],
     },
     plugins: [
-      isMWeb && new CompressionPlugin({
+      isMWeb && isEnvProduction && new CompressionPlugin({
         filename: '[path].gz[query]',
         algorithm: 'gzip',
         test: /\.js$|\.css$|\.html$/,
         threshold: 2048,
         minRatio: 0.8,
       }),
-      isMWeb && new BrotliPlugin({
+      isMWeb && isEnvProduction && new BrotliPlugin({
         asset: '[path].br[query]',
         test: /\.js$|\.css$|\.html$/,
         threshold: 2048,
